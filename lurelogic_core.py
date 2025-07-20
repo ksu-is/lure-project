@@ -1,0 +1,81 @@
+import datetime
+
+fish_profiles = {
+    "bass": {
+        "preferred_lure_types": {
+            "spring": ["spinnerbait", "jerkbait", "crankbait"],
+            "summer": ["topwater", "plastic worm", "jig"],
+            "fall": ["crankbait", "swimbait", "spinnerbait"],
+            "winter": ["blade bait", "jig"]
+        },
+        "colors_by_water_clarity": {
+            "clear": ["natural shad", "green pumpkin"],
+            "stained": ["chartreuse", "black/blue"],
+            "muddy": ["black", "firetiger"]
+        }
+    },
+    "trout": {
+        "preferred_lure_types": {
+            "spring": ["inline spinner", "small crankbait"],
+            "summer": ["spoon", "wet fly"],
+            "fall": ["crankbait", "streamer"],
+            "winter": ["ice jig", "small spoon"]
+        },
+        "colors_by_water_clarity": {
+            "clear": ["silver", "gold", "brown"],
+            "stained": ["red", "orange"],
+            "muddy": ["bright orange", "white"]
+        }
+    }
+}
+
+retrieve_styles = {
+    "morning": "slow and steady",
+    "midday": "fast with pauses",
+    "evening": "erratic twitch",
+    "night": "slow and deep"
+}
+
+def get_season(month: int) -> str:
+    if month in [12, 1, 2]:
+        return "winter"
+    elif month in [3, 4, 5]:
+        return "spring"
+    elif month in [6, 7, 8]:
+        return "summer"
+    else:
+        return "fall"
+
+def get_time_bucket(hour: int) -> str:
+    if 5 <= hour < 10:
+        return "morning"
+    elif 10 <= hour < 16:
+        return "midday"
+    elif 16 <= hour < 20:
+        return "evening"
+    else:
+        return "night"
+
+def recommend_lure(fish: str, datetime_obj: datetime.datetime, cloud_cover: str, water_clarity: str) -> dict:
+    season = get_season(datetime_obj.month)
+    time_bucket = get_time_bucket(datetime_obj.hour)
+    fish_data = fish_profiles.get(fish.lower())
+
+    if not fish_data:
+        raise ValueError(f"No data available for '{fish}'.")
+
+    lure_type = fish_data["preferred_lure_types"].get(season, ["default lure"])
+    lure_color = fish_data["colors_by_water_clarity"].get(water_clarity, ["natural"])
+
+    if cloud_cover in ["cloudy", "overcast"]:
+        lure_color.append("dark purple")
+    elif cloud_cover == "sunny" and water_clarity == "clear":
+        lure_color.append("silver flash")
+
+    return {
+        "season": season.title(),
+        "time_of_day": time_bucket.title(),
+        "recommended_lures": lure_type,
+        "recommended_colors": list(set(lure_color)),
+        "retrieve_style": retrieve_styles[time_bucket]
+    }

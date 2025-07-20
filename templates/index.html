@@ -1,0 +1,48 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LureLogic - Smart Lure Picker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>LureLogic 🎣</h1>
+    <form method="POST">
+        <label>Target Fish:
+            <input name="fish" required>
+        </label><br>
+
+        <label>Cloud Cover:
+            <select name="cloud">
+                <option value="sunny">Sunny</option>
+                <option value="cloudy">Cloudy</option>
+                <option value="overcast">Overcast</option>
+            </select>
+        </label><br>
+
+        <label>Water Clarity:
+            <select name="clarity">
+                <option value="clear">Clear</option>
+                <option value="stained">Stained</option>
+                <option value="muddy">Muddy</option>
+            </select>
+        </label><br><br>
+
+        <button type="submit">Get Recommendation</button>
+    </form>
+
+    {% if result %}
+        {% if result.error %}
+            <p style="color: red;"><strong>Error:</strong> {{ result.error }}</p>
+        {% else %}
+            <h2>🎣 Recommendation</h2>
+            <p><strong>Season:</strong> {{ result.season }}</p>
+            <p><strong>Time of Day:</strong> {{ result.time_of_day }}</p>
+            <p><strong>Lures:</strong> {{ result.recommended_lures | join(', ') }}</p>
+            <p><strong>Colors:</strong> {{ result.recommended_colors | join(', ') }}</p>
+            <p><strong>Retrieve Style:</strong> {{ result.retrieve_style }}</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
